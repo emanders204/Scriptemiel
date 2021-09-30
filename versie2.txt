@@ -1,0 +1,57 @@
+echo "Het script voor een nextcloud omgeving wordt nu uitgevoed"
+a=0
+echo "Welke webserver wil je? apche/nginx/lighttp"
+while [ $a = 0 ]
+do
+
+read webserver
+
+if [ $webserver = "nginx" ]
+then
+
+zypper install nginx
+
+elif [ $webserver = "apache" ]
+then
+
+zypper install apache2
+
+elif [ $webserver = "lighttp" ]
+then
+
+zypper install lighttp
+
+else
+
+echo "geen webserver is geinstalleerd"
+
+fi
+
+wget https://download.nextcloud.com/server/releases/nextcloud-21.0.1.zip
+
+zypper unzip
+
+unzip nextcloud-21.0.1.zip -d /var/www/
+
+chown www-data:www-data /var/www/nextcloud/ -R
+
+echo "wil je de phpmodules nu installeren?"
+read phpmodules
+
+if [ $phpmodules = "ja" ]
+then
+zypper install php7-ctype php7-curl
+fi
+
+echo "wil je het script opnieuw laden?"
+
+echo "nu kun je de configuratie installeren"
+nano /etc/php/config.ini
+
+iptables -I INPUT -p tcp --dport 80 -j ACCEPT
+
+iptables -I INPUT -p tcp --dport 443 -j ACCEPT
+
+read a
+
+done
